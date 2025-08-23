@@ -11,12 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-
-type Task = {
-  id: string;
-  title: string;
-  done: boolean;
-};
+import { Task } from '../services/TaskService';
 
 type Props = {
   visible: boolean;

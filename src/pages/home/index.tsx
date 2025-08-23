@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Text,
@@ -6,7 +6,10 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
+import * as TaskService from "../../services/TaskService";
+import { Task } from "../../services/TaskService";
 
 import TaskModal from "../../Components/TaskModal";
 import ActionMenu from "../../Components/ActionMenuModal";
@@ -25,38 +28,33 @@ type RootStackParamList = {
 
 type NavigationProp = StackNavigationProp<RootStackParamList, "Login">;
 
-type Task = {
-  id: string;
-  title: string;
-  done: boolean;
-};
-
 export default function Home() {
   const navigation = useNavigation<NavigationProp>();
 
-  const handleLogin = () => {
-    navigation.navigate("Login" as never);
-  };
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "todo" | "done">("all");
-
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuTask, setMenuTask] = useState<Task | null>(null);
-
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
-  const [newTaskTitle, setNewTaskTitle] = useState("");
-
   const [isEditModalVisible, setEditModalVisible] = useState(false);
 
+  const loadTasks = async () => {
+    setLoading(true);
+    const tasksFromApi = await TaskService.getTasks();
+    console.log("TAREFAS RECEBIDAS PELA TELA HOME:", tasksFromApi);
+    setTasks(tasksFromApi);
+    setLoading(false);
+  };
 
-  
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: "1", title: "Tarefa 1", done: false },
-    { id: "2", title: "Tarefa 2", done: true },
-    { id: "3", title: "Tarefa 3", done: false },
-  ]);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      loadTasks();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const filteredTasks =
     filter === "all"
@@ -85,12 +83,16 @@ export default function Home() {
     setMenuTask(null);
   };
 
-const handleEdit = () => {
-  if (menuTask) {
-    setEditModalVisible(true); 
-     setMenuVisible(false);   
-  }
-};
+  const handleLogin = () => {
+    navigation.navigate("Login" as never);
+  };
+
+  const handleEdit = () => {
+    if (menuTask) {
+      setEditModalVisible(true);
+      setMenuVisible(false);
+    }
+  };
 
   const handleToggleDone = () => {
     if (menuTask) {
@@ -99,43 +101,43 @@ const handleEdit = () => {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (menuTask) {
-      setTasks((prev) => prev.filter((t) => t.id !== menuTask.id));
+      await TaskService.deleteTask(menuTask.id);
       closeMenu();
+      await loadTasks();
     }
   };
 
-  const handleAddTask = (title: string) => {
-    const newTask: Task = {
-      id: String(Date.now()), 
-      title: title,
-      done: false,
-    };
-    setTasks((prevTasks) => [newTask, ...prevTasks]); 
-    setCreateModalVisible(false); 
+  const handleAddTask = async (title: string) => {
+    if (!title.trim()) return;
+    await TaskService.createTask(title);
+    setCreateModalVisible(false);
+    await loadTasks();
   };
 
-  const handleSaveTask = (taskToUpdate: Task, newTitle: string) => {
-    setTasks((prevTasks) =>
-       prevTasks.map((task) =>
-        task.id === taskToUpdate.id ? { ...task, title: newTitle } : task
-    )
-  );
+  const handleSaveTask = async (taskToUpdate: Task, newTitle: string) => {
+    await TaskService.updateTask(taskToUpdate.id, { title: newTitle });
     setEditModalVisible(false);
-    setMenuTask(null); 
+    await loadTasks();
+  };
+  const toggleTaskDone = async (taskId: string) => {
+    const taskToToggle = tasks.find((t) => t.id === taskId);
+    if (taskToToggle) {
+      await TaskService.updateTask(taskId, { done: !taskToToggle.done });
+      await loadTasks();
+    }
   };
 
-  const toggleTaskDone = (taskId: string) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, done: !task.done } : task
-      )
-    );
-  };
-
-
+  if (loading) {
     return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" color="#00C853" />
+      </SafeAreaView>
+    );
+  }
+
+  return (
     <SafeAreaView style={styles.container}>
       <View style={styles.filterContainer}>
         <TouchableOpacity
@@ -151,6 +153,7 @@ const handleEdit = () => {
             Todas
           </StyledText>
         </TouchableOpacity>
+
 
         <TouchableOpacity
           style={[
@@ -187,8 +190,13 @@ const handleEdit = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Vem da API */}
-      <StyledText style={styles.dateText}>Qua. 17 de março de 2021</StyledText>
+      <StyledText style={styles.dateText}>
+        {new Date().toLocaleDateString("pt-BR", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+        })}
+      </StyledText>
 
       <FlatList
         data={filteredTasks}
@@ -196,7 +204,7 @@ const handleEdit = () => {
         renderItem={({ item }) => (
           <View style={styles.task}>
             <TouchableOpacity
-              style={styles.task}
+              style={styles.taskContent}
               onPress={() => openModal(item)}
             >
               <TouchableOpacity onPress={() => toggleTaskDone(item.id)}>
@@ -207,18 +215,11 @@ const handleEdit = () => {
                 />
               </TouchableOpacity>
               <StyledText
-                style={[
-                  styles.taskText,
-                  item.done && {
-                    textDecorationLine: "line-through",
-                    color: "#999",
-                  },
-                ]}
+                style={[styles.taskText, item.done && styles.taskTextDone]}
               >
                 {item.title}
               </StyledText>
             </TouchableOpacity>
-
             <TouchableOpacity onPress={() => openMenu(item)}>
               <Ionicons name="ellipsis-vertical" size={20} color="#555" />
             </TouchableOpacity>
@@ -238,17 +239,17 @@ const handleEdit = () => {
           <Ionicons name="home-outline" size={22} color="#00C853" />
           <StyledText style={{ color: "#00C853" }}>Home</StyledText>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.addButton}
-        onPress={() => setCreateModalVisible(true)}>
-          <Ionicons name="add" size={30} color="rgba(255, 255, 255, 1)" />
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => setCreateModalVisible(true)}
+        >
+          <Ionicons name="add" size={30} color="#fff" />
         </TouchableOpacity>
-
         <TouchableOpacity style={styles.navItem} onPress={handleLogin}>
           <Ionicons name="log-out-outline" size={22} color="#999" />
           <StyledText style={{ color: "#999" }}>Logout</StyledText>
         </TouchableOpacity>
-       </View>
+      </View>
 
       <TaskModal
         visible={modalVisible}
@@ -262,14 +263,12 @@ const handleEdit = () => {
         onToggleDone={handleToggleDone}
         onDelete={handleDelete}
       />
-
-       <CreateTaskModal
+      <CreateTaskModal
         visible={isCreateModalVisible}
         onClose={() => setCreateModalVisible(false)}
         onCreate={handleAddTask}
       />
-
-       <EditTaskModal
+      <EditTaskModal
         visible={isEditModalVisible}
         onClose={() => setEditModalVisible(false)}
         onSave={handleSaveTask}
@@ -354,5 +353,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
     elevation: 5,
+  },
+
+  taskContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  taskTextDone: {
+    textDecorationLine: "line-through",
+    color: "#999",
   },
 });

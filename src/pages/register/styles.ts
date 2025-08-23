@@ -67,7 +67,7 @@ export const style = StyleSheet.create({
     fontSize: 15,
   },
   boxBottom: {
-    paddingBottom: 40, 
+    paddingBottom: 60, 
     alignItems: 'center',
   },
   loginText: {

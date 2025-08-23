@@ -21,21 +21,21 @@ export default function App() {
     "Roboto-Italic": require("./src/assets/fonts/Roboto-Italic.ttf"),
   });
 
-  // 4. Garante que o app só será renderizado após as fontes carregarem
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
-      // Esconde a tela de splash quando as fontes estiverem prontas
+     
       await SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
 
   if (!fontsLoaded) {
-    return null; // Não renderiza nada até que as fontes estejam carregadas
+    return null; 
   }
 
   return (
     <NavigationContainer onReady={onLayoutRootView}>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Login" 
+      screenOptions={{ headerShown: false }}>
 
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={Home} />
