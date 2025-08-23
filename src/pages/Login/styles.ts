@@ -5,11 +5,15 @@ export const style = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: themas.colors.secondary,
-        alignItems: 'center',
-        justifyContent: 'center',
         paddingHorizontal: 25,
-    },
 
+    },
+ footer: {
+    alignItems: "center",
+    marginBottom: 20, 
+    flexDirection: "row",
+    justifyContent: "center",
+  },
     boxTop: {
         marginBottom: 65,
     },
@@ -45,14 +49,14 @@ export const style = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E0E0E0',
         borderRadius: 32,
-        paddingHorizontal: 5,
+        paddingHorizontal: 25,
         marginTop: 15,
         backgroundColor: '#fff',
         justifyContent: "space-between"
     },
 
     inputPassword: {
-        flex: 1,
+        width: '96%',
         fontSize: 15,
     },
 
@@ -60,6 +64,7 @@ export const style = StyleSheet.create({
         color: '#2E3A59',
         fontSize: 15,
         marginRight: 5,
+
     },
 
     loginButton: {
@@ -79,8 +84,8 @@ export const style = StyleSheet.create({
 
     boxBottom: {
         flexDirection: 'row',
-        marginTop: 70,
-        
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 
     footerText: {

@@ -1,43 +1,61 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Text, View, TextInput, TouchableOpacity } from "react-native";
-import { style } from "./styles";
+import { style } from "./styles"; 
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import StyledText from "../../Components/StyledText";
 
-
-export default function Login() {
+export default function Register() {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
-  const handleLogin = () => {
+  const handleRegister = () => {
     
-    navigation.navigate("Home" as never);
+    console.log("Cadastrando:", { name, email, password });
+    
+    navigation.navigate("Login" as never);
   };
 
   return (
     <View style={style.container}>
-      <View
-        style={{
-          alignItems: "center",
-          height: "90%",
-          justifyContent: "center", 
-        }}
-      >
+      <View style={style.formContainer}>
         <View style={style.boxTop}>
-          <StyledText style={style.text}>Bem-vindo(a)!</StyledText>
+          <StyledText style={style.text}>Cadastre sua conta.</StyledText>
         </View>
 
         <View style={style.boxMid}>
+         
+          <TextInput
+            placeholder="Nome"
+            placeholderTextColor="#A9A9A9"
+            style={style.input}
+            value={name}
+            onChangeText={setName}
+          />
+         
           <TextInput
             placeholder="Email"
             placeholderTextColor="#A9A9A9"
             style={style.input}
             value={email}
             onChangeText={setEmail}
+            keyboardType="email-address"
           />
+
+             
+          <TextInput
+            placeholder="Idade"
+            placeholderTextColor="#A9A9A9"
+            style={style.input}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="numeric"
+          />
+
+          
           <View style={style.passwordContainer}>
             <TextInput
               placeholder="Password"
@@ -47,9 +65,7 @@ export default function Login() {
               value={password}
               onChangeText={setPassword}
             />
-            <TouchableOpacity
-              onPress={() => setPasswordVisible(!passwordVisible)}
-            >
+            <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
               <Ionicons
                 name={passwordVisible ? "eye-off-outline" : "eye-outline"}
                 size={22}
@@ -57,22 +73,16 @@ export default function Login() {
               />
             </TouchableOpacity>
           </View>
-
-          <TouchableOpacity style={{ alignSelf: "flex-end", marginTop: 8 }}>
-            <StyledText style={style.forgotText}>Esqueceu sua senha?</StyledText>
-          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={style.loginButton} onPress={handleLogin}>
-          <StyledText style={style.loginText}>Login</StyledText>
+        <TouchableOpacity style={style.registerButton} onPress={handleRegister}>
+          <StyledText style={style.registerButtonText}>Sign Up</StyledText>
         </TouchableOpacity>
       </View>
 
       <View style={style.boxBottom}>
-        <StyledText style={style.footerText}>Não tem uma conta?</StyledText>
-        <TouchableOpacity onPress={() => navigation.navigate("Register" as never)}>
-        <StyledText style={style.registerText}> Cadastre-se</StyledText>
- 
+        <TouchableOpacity onPress={() => navigation.navigate("Login" as never)}>
+          <StyledText style={style.loginText}>Voltar para login</StyledText>
         </TouchableOpacity>
       </View>
     </View>
