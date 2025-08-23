@@ -75,4 +75,22 @@ export const style = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
   },
+  disabledButton: {
+    backgroundColor: '#A9A9A9', 
+  },
+  requirements: {
+    width: '100%',
+    paddingHorizontal: 15,
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  requirementContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  requirementText: {
+    marginLeft: 10,
+    fontSize: 14,
+  },
 });

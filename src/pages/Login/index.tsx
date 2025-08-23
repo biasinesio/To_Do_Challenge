@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react";
-import { Text, View, TextInput, TouchableOpacity } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { style } from "./styles";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import * as AuthService from "../../services/AuthService";
 import StyledText from "../../Components/StyledText";
 
 
@@ -12,10 +13,26 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
-  const handleLogin = () => {
-    
-    navigation.navigate("Home" as never);
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Erro", "Por favor, preencha o e-mail e a senha.");
+      return;
+    }
+
+    const user = await AuthService.login(email, password);
+
+     if (user) {
+      
+      navigation.navigate("Home" as never);
+    } else {
+      
+      Alert.alert(
+        "Erro de Login",
+        "E-mail ou senha inválidos. Por favor, tente novamente."
+      );
+    }
   };
+
 
   return (
     <View style={style.container}>
