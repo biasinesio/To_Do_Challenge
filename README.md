@@ -16,9 +16,9 @@ O projeto foi construído utilizando um stack moderno, incluindo **Expo**, **Rea
 
 Aqui você pode ver um vídeo curto demonstrando as principais funcionalidades do aplicativo:
 
-> Substitua `app-demo.gif` pelo nome do seu ficheiro de vídeo (preferencialmente convertido para GIF para reprodução automática).
-
-[![Demonstração do App](./assets/app-demo.gif)](./assets/app-demo.gif)
+<a href="./assets/app-demo.gif">
+<img src="./assets/app-demo.gif" alt="Demonstração do App" width="50%">
+</a>
 
 ---
 ## ✅ Checklist de Funcionalidades do Desafio
@@ -36,9 +36,9 @@ Abaixo estão detalhados os requisitos do desafio e como foram implementados na 
 <br>
 
 *Demonstração do fluxo de autenticação:*
-> Substitua `login-demo.gif` pelo nome do seu ficheiro.
 
-![Demonstração do Login e Cadastro](./assets/login-demo.gif)
+<img src="./assets/login-demo.gif" alt="Demonstração do Login" width="50%">
+<img src="./assets/register-demo.gif" alt="Demonstração do Cadastro" width="50%">
 
 ---
 
@@ -65,9 +65,8 @@ Abaixo estão detalhados os requisitos do desafio e como foram implementados na 
 <br>
 
 *Demonstração da Lista de Tarefas e suas interações:*
-> Substitua `task-list-demo.gif` pelo nome do seu ficheiro.
 
-![Demonstração da Lista de Tarefas](./assets/task-list-demo.gif)
+<img src="./assets/task-list-demo.gif" alt="Demonstração da Lista de Tarefas" width="50%">
 
 ---
 
@@ -85,9 +84,8 @@ Abaixo estão detalhados os requisitos do desafio e como foram implementados na 
 <br>
 
 *Demonstração da Criação de Tarefas:*
-> Substitua `create-task-demo.gif` pelo nome do seu ficheiro.
 
-![Demonstração da Criação de Tarefas](./assets/create-task-demo.gif)
+<img src="./assets/create-task-demo.gif" alt="Demonstração da Criação de Tarefas" width="50%">
 
 ---
 
