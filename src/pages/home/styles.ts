@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import { themas } from '../../global/themes';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -35,6 +34,17 @@ export const styles = StyleSheet.create({
   },
   activeFilterText: {
     color: "#fff",
+    fontWeight: "bold",
+  },
+  filterDivider: {
+    height: 8,
+    backgroundColor: "#EDEDED",
+    marginHorizontal: -20,
+  },
+  divider: {
+    height: 2,
+    backgroundColor:"#EDEDED",
+    marginHorizontal: -20,
   },
   dateText: {
     fontSize: 17,
@@ -55,7 +65,7 @@ export const styles = StyleSheet.create({
   },
   counter: {
     textAlign: "justify",
-    marginVertical: 30,
+    marginVertical: 50,
     fontSize: 17,
     color: "#333",
   },
@@ -65,11 +75,24 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 40,
     paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
+    backgroundColor: "#F2F2F2",
+    marginHorizontal: -20,
+  },
+  glowEffect: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    height: 60,
+    top: -60,
   },
   navItem: {
     alignItems: "center",
+    zIndex: 1,
+  },
+  addButtonContainer: {
+    alignItems: "center",
+    marginTop: -30,
+    zIndex: 2,
   },
   addButton: {
     backgroundColor: "#00C853",
@@ -78,11 +101,11 @@ export const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: -40, 
-    shadowColor: "#000",
-    shadowOpacity: 0,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 5,
+  },
+  addButtonText: {
+    fontSize: 12,
+    color: "#9a9898ff",
+    marginTop: 4,
   },
 
   taskContent: {

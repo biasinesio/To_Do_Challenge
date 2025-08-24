@@ -16,6 +16,7 @@ export const style = StyleSheet.create({
   boxTop: {
     marginBottom: 65,
   },
+ 
   text: {
     fontWeight: 'bold',
     fontSize: 22,

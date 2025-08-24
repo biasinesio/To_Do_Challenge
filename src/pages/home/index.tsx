@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import * as TaskService from "../../services/TaskService";
 import { Task } from "../../services/TaskService";
 import * as AuthService from "../../services/AuthService";
@@ -46,6 +47,7 @@ export default function Home() {
   const [menuTask, setMenuTask] = useState<Task | null>(null);
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
   const [isEditModalVisible, setEditModalVisible] = useState(false);
+  const [menuPositionY, setMenuPositionY] = useState(0);
 
   const rawDate = new Date().toLocaleDateString("pt-BR", {
     weekday: "short",
@@ -89,8 +91,9 @@ export default function Home() {
     setSelectedTask(null);
   };
 
-  const openMenu = (task: Task) => {
+  const openMenu = (task: Task, yPosition: number) => {
     setMenuTask(task);
+    setMenuPositionY(yPosition);
     setMenuVisible(true);
   };
 
@@ -137,7 +140,7 @@ export default function Home() {
             await TaskService.deleteTask(menuTask.id);
             await loadTasks();
           },
-           style: "destructive", 
+          style: "destructive",
         },
       ]
     );
@@ -157,10 +160,16 @@ export default function Home() {
   };
 
   const toggleTaskDone = async (taskId: string) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId
+          ? { ...task, done: !task.done, updatedAt: new Date().toISOString() } // Inverte o 'done' e atualiza a data
+          : task
+      )
+    );
     const taskToToggle = tasks.find((t) => t.id === taskId);
     if (taskToToggle) {
       await TaskService.updateTask(taskId, { done: !taskToToggle.done });
-      await loadTasks();
     }
   };
 
@@ -233,9 +242,13 @@ export default function Home() {
         </View>
       </View>
 
+      <View style={styles.filterDivider} />
+
       <StyledText style={styles.dateText} fontWeight="bold">
         {formattedDate}
       </StyledText>
+
+      <View style={styles.divider} />
 
       <FlatList
         data={filteredTasks}
@@ -259,7 +272,15 @@ export default function Home() {
                 {item.title}
               </StyledText>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => openMenu(item)}>
+            <TouchableOpacity
+              onPress={(event) => {
+                event.currentTarget.measure(
+                  (x, y, width, height, pageX, pageY) => {
+                    openMenu(item, pageY);
+                  }
+                );
+              }}
+            >
               <Ionicons name="ellipsis-vertical" size={20} color="#555" />
             </TouchableOpacity>
           </View>
@@ -274,16 +295,26 @@ export default function Home() {
       </StyledText>
 
       <View style={styles.navbar}>
+        <LinearGradient
+          colors={["transparent", "rgba(0, 200, 83, 0.2)"]}
+          style={styles.glowEffect}
+        />
+
         <TouchableOpacity style={styles.navItem}>
           <Ionicons name="home-outline" size={22} color="#00C853" />
           <StyledText style={{ color: "#00C853" }}>Home</StyledText>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setCreateModalVisible(true)}
-        >
-          <Ionicons name="add" size={30} color="#fff" />
-        </TouchableOpacity>
+
+        <View style={styles.addButtonContainer}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => setCreateModalVisible(true)}
+          >
+            <Ionicons name="add" size={30} color="#fff" />
+          </TouchableOpacity>
+          <StyledText style={styles.addButtonText}>Adicionar</StyledText>
+        </View>
+
         <TouchableOpacity style={styles.navItem} onPress={handleLogin}>
           <Ionicons name="log-out-outline" size={22} color="#999" />
           <StyledText style={{ color: "#999" }}>Logout</StyledText>
@@ -299,6 +330,7 @@ export default function Home() {
         visible={menuVisible}
         onClose={closeMenu}
         onEdit={handleEdit}
+        positionY={menuPositionY}
         onToggleDone={handleToggleDone}
         onDelete={handleDelete}
       />

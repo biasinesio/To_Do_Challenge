@@ -13,14 +13,16 @@ export default function TaskModal({ visible, task, onClose }: TaskModalProps) {
   if (!task) return null;
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "America/Sao_Paulo", 
+  }).format(new Date(dateString));
+};
 
   return (
     <Modal
@@ -33,22 +35,25 @@ export default function TaskModal({ visible, task, onClose }: TaskModalProps) {
         <View style={styles.modalContainer}>
           <StyledText style={styles.title} fontWeight="bold">Detalhes da Tarefa</StyledText>
           
-          <StyledText style={styles.label}>Descrição</StyledText>
+          <StyledText style={styles.label} fontWeight="bold">Descrição</StyledText>
           <StyledText style={styles.text}>{task.title}</StyledText>
 
-          <StyledText style={styles.label}>Data de criação</StyledText>
+            <StyledText style={styles.label} fontWeight="bold">ID do Usuário</StyledText>
+          <StyledText style={styles.text}>{task.userId}</StyledText>
+
+          <StyledText style={styles.label} fontWeight="bold">Data de criação</StyledText>
           
           <StyledText style={styles.text}>{formatDate(task.createdAt)}</StyledText>
 
-          <StyledText style={styles.label}>Última atualização</StyledText>
+          <StyledText style={styles.label} fontWeight="bold">Última atualização</StyledText>
           
-          <StyledText style={styles.text}>{formatDate(task.updatedAt)}</StyledText>
+          <StyledText style={styles.text} >{formatDate(task.updatedAt)}</StyledText>
 
-          <StyledText style={styles.label}>Status</StyledText>
+          <StyledText style={styles.label} fontWeight="bold">Status</StyledText>
           <StyledText style={styles.text}>{task.done ? "Concluída" : "A fazer"}</StyledText>
 
           <TouchableOpacity style={styles.button} onPress={onClose}>
-            <StyledText style={styles.buttonText} fontWeight="bold">Fechar</StyledText>
+            <StyledText style={styles.buttonText} fontWeight="bold">Voltar para o Home</StyledText>
           </TouchableOpacity>
         </View>
       </View>
@@ -88,9 +93,10 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#00C853",
-    padding: 15,
+    paddingVertical: 15, 
+    paddingHorizontal: 40,
     marginTop: 20,
-    borderRadius: 30,
+    borderRadius: 32,
     alignSelf: "center",
   },
   buttonText: {

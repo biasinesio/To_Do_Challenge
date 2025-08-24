@@ -88,15 +88,15 @@ const styles = StyleSheet.create({
 
   modalView: { 
     backgroundColor: "white", 
-    borderTopLeftRadius: 20, 
-    borderTopRightRadius: 20, 
+    borderTopLeftRadius: 30, 
+    borderTopRightRadius: 30, 
     padding: 35, 
     alignItems: "center", 
     elevation: 5 
   },
 
   modalText: { 
-    marginBottom: 15, 
+    marginBottom: 30, 
     textAlign: "center", 
     fontSize: 18, 
     fontWeight: "bold" 
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     height: 50, 
     borderColor: "#ddd", 
     borderWidth: 1, 
-    borderRadius: 8, 
+    borderRadius: 32, 
     width: "100%", 
     marginBottom: 20, 
     paddingHorizontal: 10, 
@@ -120,9 +120,8 @@ const styles = StyleSheet.create({
   },
 
   button: { 
-    borderRadius: 8, 
-    padding: 10, 
-    elevation: 2, 
+    borderRadius: 32, 
+    padding: 10,  
     flex: 1, 
     marginHorizontal: 5, 
     height: 50, 
