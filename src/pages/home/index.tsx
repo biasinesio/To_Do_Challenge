@@ -4,12 +4,14 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  StyleSheet,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import * as TaskService from "../../services/TaskService";
 import { Task } from "../../services/TaskService";
 import * as AuthService from "../../services/AuthService";
+
+import { styles } from "../home/styles";
 
 import TaskModal from "../../Components/TaskModal";
 import ActionMenu from "../../Components/ActionMenuModal";
@@ -28,11 +30,11 @@ type RootStackParamList = {
 };
 
 type NavigationProp = StackNavigationProp<RootStackParamList, "Home">;
-type HomeRouteProp = RouteProp<RootStackParamList, 'Home'>;
+type HomeRouteProp = RouteProp<RootStackParamList, "Home">;
 
 export default function Home() {
   const navigation = useNavigation<NavigationProp>();
-   const route = useRoute<HomeRouteProp>();
+  const route = useRoute<HomeRouteProp>();
   const { user } = route.params;
 
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -44,6 +46,17 @@ export default function Home() {
   const [menuTask, setMenuTask] = useState<Task | null>(null);
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
   const [isEditModalVisible, setEditModalVisible] = useState(false);
+
+  const rawDate = new Date().toLocaleDateString("pt-BR", {
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const formattedDate = rawDate.charAt(0).toUpperCase() + rawDate.slice(1);
+  if (loading) {
+  }
 
   const loadTasks = async () => {
     setLoading(true);
@@ -104,12 +117,30 @@ export default function Home() {
     }
   };
 
-  const handleDelete = async () => {
-    if (menuTask) {
-      await TaskService.deleteTask(menuTask.id);
-      closeMenu();
-      await loadTasks();
-    }
+  const handleDelete = () => {
+    if (!menuTask) return;
+
+    closeMenu();
+
+    Alert.alert(
+      "Confirmar Exclusão",
+      "Tem a certeza que deseja excluir esta tarefa?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => console.log("Exclusão cancelada"),
+          style: "cancel",
+        },
+        {
+          text: "Excluir",
+          onPress: async () => {
+            await TaskService.deleteTask(menuTask.id);
+            await loadTasks();
+          },
+           style: "destructive", 
+        },
+      ]
+    );
   };
 
   const handleAddTask = async (title: string) => {
@@ -143,63 +174,67 @@ export default function Home() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.filterContainer}>
-        <TouchableOpacity
-          style={[styles.filterButton, filter === "all" && styles.activeFilter]}
-          onPress={() => setFilter("all")}
-        >
-          <StyledText
-            style={[
-              styles.filterText,
-              filter === "all" && styles.activeFilterText,
-            ]}
-          >
-            Todas
-          </StyledText>
-        </TouchableOpacity>
+      <View style={styles.filterSectionContainer}>
+        <StyledText style={styles.filterTitle} fontWeight="bold">
+          Filtrar
+        </StyledText>
 
-
-        <TouchableOpacity
-          style={[
-            styles.filterButton,
-            filter === "todo" && styles.activeFilter,
-          ]}
-          onPress={() => setFilter("todo")}
-        >
-          <StyledText
+        <View style={styles.filterContainer}>
+          <TouchableOpacity
             style={[
-              styles.filterText,
-              filter === "todo" && styles.activeFilterText,
+              styles.filterButton,
+              filter === "all" && styles.activeFilter,
             ]}
+            onPress={() => setFilter("all")}
           >
-            A fazer
-          </StyledText>
-        </TouchableOpacity>
+            <StyledText
+              style={[
+                styles.filterText,
+                filter === "all" && styles.activeFilterText,
+              ]}
+            >
+              Todas
+            </StyledText>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.filterButton,
-            filter === "done" && styles.activeFilter,
-          ]}
-          onPress={() => setFilter("done")}
-        >
-          <StyledText
+          <TouchableOpacity
             style={[
-              styles.filterText,
-              filter === "done" && styles.activeFilterText,
+              styles.filterButton,
+              filter === "todo" && styles.activeFilter,
             ]}
+            onPress={() => setFilter("todo")}
           >
-            Feitas
-          </StyledText>
-        </TouchableOpacity>
+            <StyledText
+              style={[
+                styles.filterText,
+                filter === "todo" && styles.activeFilterText,
+              ]}
+            >
+              A fazer
+            </StyledText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.filterButton,
+              filter === "done" && styles.activeFilter,
+            ]}
+            onPress={() => setFilter("done")}
+          >
+            <StyledText
+              style={[
+                styles.filterText,
+                filter === "done" && styles.activeFilterText,
+              ]}
+            >
+              Feitas
+            </StyledText>
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <StyledText style={styles.dateText}>
-        {new Date().toLocaleDateString("pt-BR", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-        })}
+      <StyledText style={styles.dateText} fontWeight="bold">
+        {formattedDate}
       </StyledText>
 
       <FlatList
@@ -231,9 +266,9 @@ export default function Home() {
         )}
       />
 
-      <StyledText style={styles.counter}>
+      <StyledText style={styles.counter} fontWeight="bold">
         Total de tarefas:{" "}
-        <StyledText style={{ color: "#00C853" }}>
+        <StyledText style={{ color: "#00C853" }} fontWeight="bold">
           {tasks.filter((t) => t.done).length}/{tasks.length}
         </StyledText>
       </StyledText>
@@ -281,91 +316,3 @@ export default function Home() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F2F2F2",
-    paddingHorizontal: 20,
-  },
-  filterContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  filterButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: "#EDEDED",
-  },
-  activeFilter: {
-    backgroundColor: "#00C853",
-  },
-  filterText: {
-    color: "#777",
-    fontWeight: "500",
-  },
-  activeFilterText: {
-    color: "#fff",
-  },
-  dateText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginVertical: 10,
-  },
-  task: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  taskText: {
-    marginLeft: 10,
-    fontSize: 16,
-  },
-  counter: {
-    textAlign: "center",
-    marginVertical: 15,
-    fontSize: 14,
-    color: "#333",
-  },
-  navbar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 40,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
-  },
-  navItem: {
-    alignItems: "center",
-  },
-  addButton: {
-    backgroundColor: "#00C853",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: -30, // flutuando
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 5,
-  },
-
-  taskContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  taskTextDone: {
-    textDecorationLine: "line-through",
-    color: "#999",
-  },
-});

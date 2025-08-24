@@ -37,11 +37,11 @@ export default function TaskModal({ visible, task, onClose }: TaskModalProps) {
           <StyledText style={styles.text}>{task.title}</StyledText>
 
           <StyledText style={styles.label}>Data de criação</StyledText>
-          {/* 3. CORREÇÃO: Mostrar a data de criação da tarefa */}
+          
           <StyledText style={styles.text}>{formatDate(task.createdAt)}</StyledText>
 
           <StyledText style={styles.label}>Última atualização</StyledText>
-          {/* 4. CORREÇÃO: Mostrar a data de atualização da tarefa */}
+          
           <StyledText style={styles.text}>{formatDate(task.updatedAt)}</StyledText>
 
           <StyledText style={styles.label}>Status</StyledText>
