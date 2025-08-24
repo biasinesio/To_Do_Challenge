@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  Text,
   View,
   TouchableOpacity,
   FlatList,
@@ -10,6 +9,7 @@ import {
 } from "react-native";
 import * as TaskService from "../../services/TaskService";
 import { Task } from "../../services/TaskService";
+import * as AuthService from "../../services/AuthService";
 
 import TaskModal from "../../Components/TaskModal";
 import ActionMenu from "../../Components/ActionMenuModal";
@@ -18,18 +18,22 @@ import EditTaskModal from "../../Components/EditTaskModal";
 import StyledText from "../../Components/StyledText";
 
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 
 type RootStackParamList = {
   Login: undefined;
-  Home: undefined;
+  Home: { user: AuthService.User };
+  Register: undefined;
 };
 
-type NavigationProp = StackNavigationProp<RootStackParamList, "Login">;
+type NavigationProp = StackNavigationProp<RootStackParamList, "Home">;
+type HomeRouteProp = RouteProp<RootStackParamList, 'Home'>;
 
 export default function Home() {
   const navigation = useNavigation<NavigationProp>();
+   const route = useRoute<HomeRouteProp>();
+  const { user } = route.params;
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,8 +47,7 @@ export default function Home() {
 
   const loadTasks = async () => {
     setLoading(true);
-    const tasksFromApi = await TaskService.getTasks();
-    console.log("TAREFAS RECEBIDAS PELA TELA HOME:", tasksFromApi);
+    const tasksFromApi = await TaskService.getTasks(user.id);
     setTasks(tasksFromApi);
     setLoading(false);
   };
@@ -84,7 +87,7 @@ export default function Home() {
   };
 
   const handleLogin = () => {
-    navigation.navigate("Login" as never);
+    navigation.navigate("Login");
   };
 
   const handleEdit = () => {
@@ -111,7 +114,7 @@ export default function Home() {
 
   const handleAddTask = async (title: string) => {
     if (!title.trim()) return;
-    await TaskService.createTask(title);
+    await TaskService.createTask(title, user.id);
     setCreateModalVisible(false);
     await loadTasks();
   };
@@ -121,6 +124,7 @@ export default function Home() {
     setEditModalVisible(false);
     await loadTasks();
   };
+
   const toggleTaskDone = async (taskId: string) => {
     const taskToToggle = tasks.find((t) => t.id === taskId);
     if (taskToToggle) {

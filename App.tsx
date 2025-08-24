@@ -5,13 +5,21 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
 
+import { User } from './src/services/AuthService';
+
 import Login from "./src/pages/Login";
 import Home from "./src/pages/home";
 import Register from "./src/pages/register";
 
+export type RootStackParamList = {
+  Login: undefined; // A tela Login não recebe parâmetros
+  Home: { user: User }; // A tela Home ESPERA receber um objeto 'user'
+  Register: undefined; // A tela Register não recebe parâmetros
+};
+
 SplashScreen.preventAutoHideAsync();
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
 

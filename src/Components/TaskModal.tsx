@@ -1,41 +1,54 @@
 import React from "react";
 import { View, Text, Modal, TouchableOpacity, StyleSheet } from "react-native";
+import StyledText from "./StyledText";
+import { Task } from "../services/TaskService";
 
 type TaskModalProps = {
   visible: boolean;
-  task: { id: string; title: string; done: boolean } | null;
+  task: Task | null;
   onClose: () => void;
 };
 
 export default function TaskModal({ visible, task, onClose }: TaskModalProps) {
   if (!task) return null;
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={visible}
       onRequestClose={onClose}
     >
       <View style={styles.modalBackground}>
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>Descrição</Text>
-          <Text style={styles.text}>{task.title}</Text>
+          <StyledText style={styles.title} fontWeight="bold">Detalhes da Tarefa</StyledText>
+          
+          <StyledText style={styles.label}>Descrição</StyledText>
+          <StyledText style={styles.text}>{task.title}</StyledText>
 
-          <Text style={styles.title}>Id</Text>
-          <Text style={styles.text}>{task.id}</Text>
+          <StyledText style={styles.label}>Data de criação</StyledText>
+          {/* 3. CORREÇÃO: Mostrar a data de criação da tarefa */}
+          <StyledText style={styles.text}>{formatDate(task.createdAt)}</StyledText>
 
-          <Text style={styles.title}>Data de criação</Text>
-          <Text style={styles.text}>17/03/2021</Text>
+          <StyledText style={styles.label}>Última atualização</StyledText>
+          {/* 4. CORREÇÃO: Mostrar a data de atualização da tarefa */}
+          <StyledText style={styles.text}>{formatDate(task.updatedAt)}</StyledText>
 
-          <Text style={styles.title}>Última atualização</Text>
-          <Text style={styles.text}>17/03/2021</Text>
-
-          <Text style={styles.title}>Status</Text>
-          <Text style={styles.text}>{task.done ? "Feita" : "A fazer"}</Text>
+          <StyledText style={styles.label}>Status</StyledText>
+          <StyledText style={styles.text}>{task.done ? "Concluída" : "A fazer"}</StyledText>
 
           <TouchableOpacity style={styles.button} onPress={onClose}>
-            <Text style={styles.buttonText}>Voltar para Home</Text>
+            <StyledText style={styles.buttonText} fontWeight="bold">Fechar</StyledText>
           </TouchableOpacity>
         </View>
       </View>
@@ -56,6 +69,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     alignItems: "flex-start",
+  },
+   label: {
+    fontSize: 12,
+    color: '#7f8c8d',
+    textTransform: 'uppercase',
+    marginTop: 15,
   },
   title: {
     fontWeight: "bold",

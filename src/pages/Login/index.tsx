@@ -1,17 +1,25 @@
-import React, { useRef, useState } from "react";
-import { Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
+import React, { useState } from "react";
+import { View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { style } from "./styles";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as AuthService from "../../services/AuthService";
 import StyledText from "../../Components/StyledText";
 
+import type { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../../App";
+
+type LoginScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'Login'
+>;
 
 export default function Login() {
+  const navigation = useNavigation<LoginScreenNavigationProp>();
+
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigation = useNavigation();
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -21,18 +29,15 @@ export default function Login() {
 
     const user = await AuthService.login(email, password);
 
-     if (user) {
-      
-      navigation.navigate("Home" as never);
+    if (user) {
+      navigation.navigate("Home", { user: user });
     } else {
-      
       Alert.alert(
         "Erro de Login",
         "E-mail ou senha inválidos. Por favor, tente novamente."
       );
     }
-  };
-
+  }
 
   return (
     <View style={style.container}>
@@ -40,11 +45,11 @@ export default function Login() {
         style={{
           alignItems: "center",
           height: "90%",
-          justifyContent: "center", 
+          justifyContent: "center",
         }}
       >
         <View style={style.boxTop}>
-          <StyledText style={style.text}>Bem-vindo(a)!</StyledText>
+          <StyledText style={style.text} fontWeight="bold">Bem-vindo(a)!</StyledText>
         </View>
 
         <View style={style.boxMid}>
@@ -54,6 +59,8 @@ export default function Login() {
             style={style.input}
             value={email}
             onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
           />
           <View style={style.passwordContainer}>
             <TextInput
@@ -68,7 +75,7 @@ export default function Login() {
               onPress={() => setPasswordVisible(!passwordVisible)}
             >
               <Ionicons
-                name={passwordVisible ? "eye-off-outline" : "eye-outline"}
+                name={passwordVisible ? "eye-outline" : "eye-off-outline"}
                 size={22}
                 color="#A9A9A9"
               />
@@ -81,15 +88,15 @@ export default function Login() {
         </View>
 
         <TouchableOpacity style={style.loginButton} onPress={handleLogin}>
-          <StyledText style={style.loginText}>Login</StyledText>
+          <StyledText style={style.loginText} fontWeight="bold">Login</StyledText>
         </TouchableOpacity>
       </View>
 
       <View style={style.boxBottom}>
         <StyledText style={style.footerText}>Não tem uma conta?</StyledText>
-        <TouchableOpacity onPress={() => navigation.navigate("Register" as never)}>
-        <StyledText style={style.registerText}> Cadastre-se</StyledText>
- 
+        {/* CORREÇÃO: Removido o "as never" desnecessário */}
+        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+          <StyledText style={style.registerText} fontWeight="bold"> Cadastre-se</StyledText>
         </TouchableOpacity>
       </View>
     </View>
