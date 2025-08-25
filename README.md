@@ -89,6 +89,27 @@ Abaixo estão detalhados os requisitos do desafio e como foram implementados na 
 
 ---
 
+🛠️ Ambiente de Desenvolvimento
+Para garantir a compatibilidade, o projeto foi desenvolvido e testado utilizando as seguintes ferramentas e versões:
+
+Node.js: v18.18.0 ou superior (LTS recomendado).
+
+Para verificar sua versão, rode no terminal: node -v
+
+npm: v9.8.1 ou superior (geralmente vem com o Node.js).
+
+Para verificar sua versão, rode no terminal: npm -v
+
+Expo SDK: ~53.0.20
+
+React: 19.0.0
+
+React Native: 0.79.5 (versão gerenciada pelo Expo SDK 53)
+
+TypeScript: ~5.8.3
+
+As versões exatas de todas as bibliotecas utilizadas estão detalhadas no arquivo package.json. Recomenda-se instalar as dependências a partir do arquivo package-lock.json (usando npm install) para garantir a consistência do ambiente.
+
 ## 🚀 Como Executar o Projeto
 
 Para executar este projeto localmente, você precisará de ter o Node.js, npm (ou yarn) e o Git instalados. Para o ambiente de teste, um emulador Android (via Android Studio) ou um dispositivo físico (iOS ou Android) é necessário.
